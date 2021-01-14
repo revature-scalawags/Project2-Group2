@@ -23,7 +23,7 @@ object TweetsDemo {
   @throws[IOException]
   def main(args: Array[String]): Unit = {
     //var bearerToken: String = System.getenv("BEARER_TOKEN")
-    var bearerToken: String = "AAAAAAAAAAAAAAAAAAAAABwjLwEAAAAAmKwfSHgPu1hd0BLNHyMAJW%2FlYRM%3DVONcD8xJw8Jg2z41n9wnU4Ea0GqG798AkmkoWKtiN2RnJIkApZ"
+    var bearerToken: String = ""
     if (bearerToken != null) {
       //Replace comma separated ids with Tweets Ids of your choice
       var response: String = getTweets("1349422509213458432", bearerToken)
