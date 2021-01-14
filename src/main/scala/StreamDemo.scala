@@ -13,7 +13,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import org.apache.spark.sql.SparkSession
 
 
-object Main {
+object StreamDemo {
   def main(args: Array[String]): Unit = {
         Future {
             tweetStreamToDir()
@@ -39,7 +39,7 @@ object Main {
         val httpClient = HttpClients.custom.setDefaultRequestConfig(
             RequestConfig.custom.setCookieSpec(CookieSpecs.STANDARD).build
         ).build
-        val uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/sample/stream")
+        val uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/recent?query=from:TwitterDev")
         val httpGet = new HttpGet(uriBuilder.build)
         val bearerToken = System.getenv("BEARER_TOKEN")
         httpGet.setHeader("Authorization", String.format("Bearer %s", bearerToken))
