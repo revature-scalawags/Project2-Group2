@@ -22,10 +22,11 @@ object TweetsDemo {
 
   @throws[IOException]
   def main(args: Array[String]): Unit = {
-    var bearerToken: String = System.getenv("BEARER_TOKEN")
+    //var bearerToken: String = System.getenv("BEARER_TOKEN")
+    var bearerToken: String = "AAAAAAAAAAAAAAAAAAAAABwjLwEAAAAAmKwfSHgPu1hd0BLNHyMAJW%2FlYRM%3DVONcD8xJw8Jg2z41n9wnU4Ea0GqG798AkmkoWKtiN2RnJIkApZ"
     if (bearerToken != null) {
       //Replace comma separated ids with Tweets Ids of your choice
-      var response: String = getTweets("1138505981460193280,1261326399320715264", bearerToken)
+      var response: String = getTweets("1349422509213458432", bearerToken)
       println(response)
     } else {
       println("There was a problem getting you bearer token. Please make sure you set the BEARER_TOKEN environment variable")
@@ -43,18 +44,18 @@ object TweetsDemo {
             RequestConfig.custom.setCookieSpec(CookieSpecs.STANDARD).build
         ).build
 
-    val uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/recent?query=from:TwitterDev")
+    val uriBuilder = new URIBuilder("https://api.twitter.com/2/users/by/username/:Burgerking")
     val httpGet = new HttpGet(uriBuilder.build)
     val bearerToken = System.getenv("BEARER_TOKEN")
     httpGet.setHeader("Authorization", String.format("Bearer %s", bearerToken))
 
-    var queryParameters: ArrayBuffer[NameValuePair] = ArrayBuffer[NameValuePair]()
+    var queryParameters: java.util.List[NameValuePair] = new java.util.ArrayList[NameValuePair]()
     
-    queryParameters += new BasicNameValuePair("ids", ids)
-    queryParameters += new BasicNameValuePair("tweet.fields", "created_at")
-    //uriBuilder.addParameters(queryParameters)
-    uriBuilder.addParameters("ids", ids)
+    queryParameters.add(new BasicNameValuePair("ids", ids))
+    queryParameters.add(new BasicNameValuePair("tweet.fields", "created_at"))
     uriBuilder.addParameters(queryParameters)
+    // uriBuilder.addParameters(new BasicNameValuePair("ids", ids))
+    // uriBuilder.addParameters(new BasicNameValuePair("tweet.fields", "created_at"))
     
     httpGet.setHeader("Authorization", String.format("Bearer %s", bearerToken));
     httpGet.setHeader("Content-Type", "application/json");
