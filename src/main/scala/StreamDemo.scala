@@ -13,6 +13,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import org.apache.spark.sql.SparkSession
 
 
+
+/**
+ * This is a copy of Mehrab's code. I haven't had a chance to fix anything yet.
+*/
+
 object StreamDemo {
   def main(args: Array[String]): Unit = {
         Future {

@@ -17,7 +17,7 @@ import java.net.URISyntaxException;
 import scala.collection.mutable.ArrayBuffer
 
 
-object TweetsDemo {
+object SearchTweets {
 
   @throws[IOException]
   def main(args: Array[String]): Unit = {
@@ -25,9 +25,8 @@ object TweetsDemo {
 
     if (bearerToken != null) {
           Future {
-    
-        // A single tweet id
-      var response: String = getTweets("1349422509213458432", bearerToken)
+
+      var response: String = getTweets("BurgerKing", bearerToken)
       println(response)
           }
     } else {
@@ -37,14 +36,15 @@ object TweetsDemo {
   }
 
   @throws[IOException]
-  def getTweets(id: String, bearerToken: String): String ={
+  def getTweets(query: String, bearerToken: String): String ={
     var tweetResponse: String = ""
     val httpClient = HttpClients.custom.setDefaultRequestConfig(
             RequestConfig.custom.setCookieSpec(CookieSpecs.STANDARD).build
         ).build
 
-    //to lookup a single Tweet
-    val uriBuilder = new URIBuilder(s"https://api.twitter.com/2/tweets?ids=${id}")
+    //to search Tweets based on query
+    val uriBuilder = new URIBuilder(s"https://api.twitter.com/2/tweets/search/recent?query=from:${query}")
+
     val httpGet = new HttpGet(uriBuilder.build)
     httpGet.setHeader("Authorization", s"Bearer ${bearerToken}")
 
