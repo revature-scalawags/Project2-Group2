@@ -22,7 +22,7 @@ object SearchTweets {
   @throws[IOException]
   def main(args: Array[String]): Unit = {
 
-    var bearerToken: String = "Sundoo"
+    var bearerToken: String = "Sundoo1"
 
     if (bearerToken != null) {
           Future {
