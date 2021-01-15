@@ -21,7 +21,7 @@ object SearchTweets {
 
   @throws[IOException]
   def main(args: Array[String]): Unit = {
-    var bearerToken: String = "YOUR API KEY HERE"
+    var bearerToken: String = "Sundoo"
 
     if (bearerToken != null) {
           Future {
