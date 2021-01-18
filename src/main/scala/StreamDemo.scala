@@ -39,7 +39,7 @@ object StreamDemo {
         textQuery.awaitTermination(60000)
     }
 
-    
+
     def tweetStreamToDir() {
         val httpClient = HttpClients.custom.setDefaultRequestConfig(
             RequestConfig.custom.setCookieSpec(CookieSpecs.STANDARD).build

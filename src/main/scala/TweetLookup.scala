@@ -25,7 +25,7 @@ object TweetsDemo {
 
     if (bearerToken != null) {
           Future {
-    
+
         // A single tweet id
       var response: String = getTweets("1349422509213458432", bearerToken)
       println(response)

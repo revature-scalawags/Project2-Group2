@@ -25,7 +25,7 @@ object UserIDCheck {
 
     if (bearerToken != null) {
           Future {
-    
+
         // A single tweet id
       var response: String = getTweets("167421802", bearerToken)
       println(response)

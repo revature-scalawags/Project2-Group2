@@ -25,7 +25,7 @@ object IdLookup {
 
     if (bearerToken != null) {
           Future {
-    
+
         //ID to look up goes here
       var response: String = getTweets("BurgerKing", bearerToken)
       println(response)
@@ -43,9 +43,9 @@ object IdLookup {
             RequestConfig.custom.setCookieSpec(CookieSpecs.STANDARD).build
         ).build
 
-    
+
     //to lookup a user's detailed info based on id name
-    val uriBuilder = new URIBuilder(s"https://api.twitter.com/2/users/by/username/${userid}") 
+    val uriBuilder = new URIBuilder(s"https://api.twitter.com/2/users/by/username/${userid}")
 
     val httpGet = new HttpGet(uriBuilder.build)
     httpGet.setHeader("Authorization", s"Bearer ${bearerToken}")
