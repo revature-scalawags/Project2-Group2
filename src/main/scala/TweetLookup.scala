@@ -19,22 +19,22 @@ import scala.collection.mutable.ArrayBuffer
 
 object TweetsDemo {
 
-  @throws[IOException]
-  def main(args: Array[String]): Unit = {
-    var bearerToken: String = "YOUR API KEY HERE"
+  // @throws[IOException]
+  // def main(args: Array[String]): Unit = {
+  //   var bearerToken: String = "YOUR API KEY HERE"
 
-    if (bearerToken != null) {
-          Future {
+  //   if (bearerToken != null) {
+  //         Future {
     
-        // A single tweet id
-      var response: String = getTweets("1349422509213458432", bearerToken)
-      println(response)
-          }
-    } else {
-      println("There was a problem getting you bearer token. Please make sure you set the BEARER_TOKEN environment variable")
-    }
-    Thread.sleep(3000)
-  }
+  //       // A single tweet id
+  //     var response: String = getTweets("1349422509213458432", bearerToken)
+  //     println(response)
+  //         }
+  //   } else {
+  //     println("There was a problem getting you bearer token. Please make sure you set the BEARER_TOKEN environment variable")
+  //   }
+  //   Thread.sleep(3000)
+  // }
 
   @throws[IOException]
   def getTweets(id: String, bearerToken: String): String ={
