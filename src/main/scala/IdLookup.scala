@@ -19,22 +19,22 @@ import scala.collection.mutable.ArrayBuffer
 
 object IdLookup {
 
-  // @throws[IOException]
-  // def main(args: Array[String]): Unit = {
-  //   var bearerToken: String = ""
+  @throws[IOException]
+  def main(args: Array[String]): Unit = {
+    var bearerToken: String = ""
 
-  //   if (bearerToken != null) {
-  //         Future {
+    if (bearerToken != null) {
+          Future {
     
-  //       //ID to look up goes here
-  //     var response: String = getTweets("BurgerKing", bearerToken)
-  //     println(response)
-  //         }
-  //   } else {
-  //     println("There was a problem getting you bearer token. Please make sure you set the BEARER_TOKEN environment variable")
-  //   }
-  //   Thread.sleep(3000)
-  // }
+        //ID to look up goes here
+      var response: String = getTweets("BurgerKing", bearerToken)
+      println(response)
+          }
+    } else {
+      println("There was a problem getting you bearer token. Please make sure you set the BEARER_TOKEN environment variable")
+    }
+    Thread.sleep(3000)
+  }
 
   @throws[IOException]
   def getTweets(userid: String, bearerToken: String): String ={

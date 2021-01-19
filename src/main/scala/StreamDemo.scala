@@ -19,25 +19,25 @@ import org.apache.spark.sql.SparkSession
 */
 
 object StreamDemo {
-//   def main(args: Array[String]): Unit = {
-//         Future {
-//             tweetStreamToDir()
-//         }
+  def main(args: Array[String]): Unit = {
+        Future {
+            tweetStreamToDir()
+        }
 
-//         val spark = SparkSession.builder()
-//             .appName("TwitterDemo")
-//             .master("local[4]")
-//             .getOrCreate()
-//         import spark.implicits._
-//         spark.sparkContext.setLogLevel("WARN")
+        val spark = SparkSession.builder()
+            .appName("TwitterDemo")
+            .master("local[4]")
+            .getOrCreate()
+        import spark.implicits._
+        spark.sparkContext.setLogLevel("WARN")
 
-//         val staticDF = spark.read.json("twitterstream")
-//         val streamDF = spark.readStream.schema(staticDF.schema).json("twitterstream")
+        val staticDF = spark.read.json("twitterstream")
+        val streamDF = spark.readStream.schema(staticDF.schema).json("twitterstream")
 
-//         val textQuery = streamDF.select($"data.text").writeStream.outputMode("append").format("console").start()
+        val textQuery = streamDF.select($"data.text").writeStream.outputMode("append").format("console").start()
 
-//         textQuery.awaitTermination(60000)
-//     }
+        textQuery.awaitTermination(60000)
+    }
 
     
     def tweetStreamToDir() {
