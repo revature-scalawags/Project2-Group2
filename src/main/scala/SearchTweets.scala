@@ -1,21 +1,21 @@
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
-import scala.concurrent.Future
+import org.apache.http.HttpEntity
+import org.apache.http.HttpResponse
+import org.apache.http.NameValuePair
+import org.apache.http.client.HttpClient
+import org.apache.http.client.config.CookieSpecs
+import org.apache.http.client.config.RequestConfig
+import org.apache.http.client.methods.HttpGet
+import org.apache.http.client.utils.URIBuilder
+import org.apache.http.impl.client.HttpClients
+import org.apache.http.message.BasicNameValuePair
+import org.apache.http.util.EntityUtils
+
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
-
-import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.IOException
+import java.net.URISyntaxException
 import scala.collection.mutable.ArrayBuffer
-
+import scala.concurrent.duration.Duration
 import scala.util.parsing.json._
 
 object SearchTweets {
@@ -25,40 +25,39 @@ object SearchTweets {
 
     var bearerToken: String = "YOUR API KEY HERE"
 
-    if (bearerToken != null) {
-          Future {
-
-            var response: String = getTweets("BurgerKing", bearerToken)
-            println(response)
-            //deconstruct JSON object to find next_token
-            val json:Option[Any] = JSON.parseFull(response)
-            val map:Map[String,Any] = json.get.asInstanceOf[Map[String, Any]]
-            val meta:Map[String, String] = map.get("meta").get.asInstanceOf[Map[String, String]]
-            //if there is next_token, call retrievePages function to recursively retrieve all pages
-            if (meta.contains("next_token")) {
-              val next_token = meta("next_token")
-              retrievePages(next_token)
-            }
+      if (bearerToken != null) {
+        val tweets = Future {
+          var response: String = getTweets("BurgerKing", bearerToken)
+          println(response)
+          //deconstruct JSON object to find next_token
+          val json: Option[Any] = JSON.parseFull(response)
+          val map: Map[String, Any] = json.get.asInstanceOf[Map[String, Any]]
+          val meta: Map[String, String] = map.get("meta").get.asInstanceOf[Map[String, String]]
+          //if there is next_token, call retrievePages function to recursively retrieve all pages
+          if (meta.contains("next_token")) {
+            val next_token = meta("next_token")
+            retrievePages(next_token, bearerToken)
           }
-    } else {
-      println("There was a problem getting you bearer token. Please make sure you set the BEARER_TOKEN environment variable")
+        }
+        Await.ready(tweets, Duration.Inf)
+      }
+      else {
+        println("There was a problem getting you bearer token. Please make sure you set the BEARER_TOKEN environment variable")
     }
-    Thread.sleep(10000)
   }
 
   //recursively retrieve all pages from API endpoint, printing them to console
-  def retrievePages(next_token: String): Unit = {
-      var bearerToken: String = "AAAAAAAAAAAAAAAAAAAAAKUnLwEAAAAApWuEw9K8SVH7%2BqNNxVtg36Ryr5o%3DP3sGYZngNVtApjFYqjMC5r3lTg8cF4gGIdCtcjUJAjnd23VpEk"
-      var response: String = getTweets("BurgerKing", bearerToken, next_token)
-      println(response)
+  def retrievePages(next_token: String, bearer_token: String): Unit = {
+    var response: String = getTweets("BurgerKing", bearer_token, next_token)
+    println(response)
 
-      val json: Option[Any] = JSON.parseFull(response)
-      val map: Map[String, Any] = json.get.asInstanceOf[Map[String, Any]]
-      val meta: Map[String, String] = map.get("meta").get.asInstanceOf[Map[String, String]]
-      if (meta.contains("next_token")) {
-        val next_token = meta("next_token")
-        retrievePages(next_token)
-      }
+    val json: Option[Any] = JSON.parseFull(response)
+    val map: Map[String, Any] = json.get.asInstanceOf[Map[String, Any]]
+    val meta: Map[String, String] = map.get("meta").get.asInstanceOf[Map[String, String]]
+    if (meta.contains("next_token")) {
+      val next_token = meta("next_token")
+      retrievePages(next_token, bearer_token)
+    }
   }
 
   @throws[IOException]
