@@ -9,6 +9,8 @@ import org.apache.http.client.utils.URIBuilder
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.message.BasicNameValuePair
 import org.apache.http.util.EntityUtils
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.DataFrame
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -17,6 +19,8 @@ import java.net.URISyntaxException
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.duration.Duration
 import scala.util.parsing.json._
+import scala.util.Try
+import org.apache.spark.sql.functions.explode
 
 object SearchTweets {
 
@@ -25,20 +29,32 @@ object SearchTweets {
     var bearerToken: String = System.getenv("BEARER_TOKEN")
 
       if (bearerToken != null) {
-        val tweets = Future {
-          var response: String = getTweets("BurgerKing", bearerToken)
-          println(response)
-          //deconstruct JSON object to find next_token
-          val json: Option[Any] = JSON.parseFull(response)
-          val map: Map[String, Any] = json.get.asInstanceOf[Map[String, Any]]
-          val meta: Map[String, String] = map.get("meta").get.asInstanceOf[Map[String, String]]
-          //if there is next_token, call retrievePages function to recursively retrieve all pages
-          if (meta.contains("next_token")) {
-            val next_token = meta("next_token")
-            retrievePages(next_token, bearerToken)
-          }
+        // setup spark session
+        val spark = SparkSession.builder()
+          .appName("searchTweets")
+          .master("local[4]")
+          .getOrCreate()
+        import spark.implicits._
+        spark.sparkContext.setLogLevel("WARN")
+
+        //create a dataframe out of our response json so we can start working with it
+        val responseDF = spark.read.json(Seq(getTweets("BurgerKing", bearerToken)).toDS)
+
+        //deconstruct response DF to start building our tweetDF find next_token
+        var tweetDF = responseDF.select(explode($"data").as("tweetList")).select("tweetList.*")
+        val metaDF = responseDF.select($"meta.*")
+
+        //if there is next_token, call retrievePages function to recursively retrieve all pages
+        if (Try(metaDF("next_token")).isSuccess) {
+          val next_token = metaDF.select("next_token").first().getString(0)
+          tweetDF = retrievePages(next_token, bearerToken, tweetDF, spark)
         }
-        Await.ready(tweets, Duration.Inf)
+
+        // At this point the tweetDF contains our desired tweets in the text column
+        tweetDF.show()
+        tweetDF.printSchema()
+
+        spark.stop()
       }
       else {
         println("There was a problem getting you bearer token. Please make sure you set the BEARER_TOKEN environment variable")
@@ -46,17 +62,24 @@ object SearchTweets {
   }
 
   //recursively retrieve all pages from API endpoint, printing them to console
-  def retrievePages(next_token: String, bearer_token: String): Unit = {
-    var response: String = getTweets("BurgerKing", bearer_token, next_token)
-    println(response)
+  def retrievePages(next_token: String, bearer_token: String, buildingDF: DataFrame, spark: SparkSession): DataFrame = {
+    import spark.implicits._
+    val responseDF = spark.read.json(Seq(getTweets("BurgerKing", bearer_token, next_token)).toDS())
+    var tweetDF = responseDF.select(explode($"data").as("tweetList")).select("tweetList.*")
 
-    val json: Option[Any] = JSON.parseFull(response)
-    val map: Map[String, Any] = json.get.asInstanceOf[Map[String, Any]]
-    val meta: Map[String, String] = map.get("meta").get.asInstanceOf[Map[String, String]]
-    if (meta.contains("next_token")) {
-      val next_token = meta("next_token")
-      retrievePages(next_token, bearer_token)
+    // append our new DF to the old DF so we can pass it to the next reccursive call
+    tweetDF = buildingDF.union(tweetDF)
+
+    //check if we can continue down the next_token reccursive call
+    val meta = responseDF.select($"meta.*")
+    if (Try(meta("next_token")).isSuccess) {
+      val next_token = meta.select("next_token").first().getString(0)
+      return retrievePages(next_token, bearer_token, tweetDF, spark)
     }
+
+    //else we are finished
+    else
+      return tweetDF
   }
 
   @throws[IOException]
