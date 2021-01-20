@@ -13,40 +13,38 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import org.apache.spark.sql.SparkSession
 
 
-
-/**
- * This is a copy of Mehrab's code. I haven't had a chance to fix anything yet.
-*/
-
 object StreamDemo {
-//   def main(args: Array[String]): Unit = {
-//         Future {
-//             tweetStreamToDir()
-//         }
+   def main(args: Array[String]): Unit = {
+         Future {
+             tweetStreamToDir()
+         }
 
-//         val spark = SparkSession.builder()
-//             .appName("TwitterDemo")
-//             .master("local[4]")
-//             .getOrCreate()
-//         import spark.implicits._
-//         spark.sparkContext.setLogLevel("WARN")
+         val spark = SparkSession.builder()
+             .appName("TwitterDemo")
+             .master("local[4]")
+             .getOrCreate()
+         import spark.implicits._
+         spark.sparkContext.setLogLevel("WARN")
+//         println(System.getProperty("user.dir"))
+//         Thread.sleep(20000)
+         val staticDF = spark.read.json("tweetstream.tmp")
+         val streamDF = spark.readStream.schema(staticDF.schema).json("twitterstream")
 
-//         val staticDF = spark.read.json("twitterstream")
-//         val streamDF = spark.readStream.schema(staticDF.schema).json("twitterstream")
+         val textQuery = streamDF.select($"data.text").writeStream.outputMode("append").format("console").start()
 
-//         val textQuery = streamDF.select($"data.text").writeStream.outputMode("append").format("console").start()
-
-//         textQuery.awaitTermination(60000)
-//     }
+         textQuery.awaitTermination(60000)
+     }
 
     
     def tweetStreamToDir() {
         val httpClient = HttpClients.custom.setDefaultRequestConfig(
             RequestConfig.custom.setCookieSpec(CookieSpecs.STANDARD).build
         ).build
-        val uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/recent?query=from:TwitterDev")
+//        val uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/sample/stream")
+        val uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/stream")
         val httpGet = new HttpGet(uriBuilder.build)
-        val bearerToken = System.getenv("BEARER_TOKEN")
+//        val bearerToken = System.getenv("BEARER_TOKEN")
+        val bearerToken = "AAAAAAAAAAAAAAAAAAAAAKUnLwEAAAAApWuEw9K8SVH7%2BqNNxVtg36Ryr5o%3DP3sGYZngNVtApjFYqjMC5r3lTg8cF4gGIdCtcjUJAjnd23VpEk"
         httpGet.setHeader("Authorization", String.format("Bearer %s", bearerToken))
         val response = httpClient.execute(httpGet)
         val entity = response.getEntity()
