@@ -22,7 +22,7 @@ object SearchTweets {
 
   @throws[IOException]
   def main(args: Array[String]): Unit = {
-    var bearerToken: String = "YOUR API KEY HERE"
+    var bearerToken: String = System.getenv("BEARER_TOKEN")
 
       if (bearerToken != null) {
         val tweets = Future {
