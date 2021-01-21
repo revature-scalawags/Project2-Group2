@@ -38,7 +38,7 @@ object StreamDemo {
 
          val textQuery = streamDF.select($"data.text").writeStream.outputMode("append").format("console").start()
 
-         textQuery.awaitTermination(180000)
+         textQuery.awaitTermination(60000)
      }
 
     
@@ -48,9 +48,9 @@ object StreamDemo {
         ).build
       //this endpoint will work
 //        val uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/sample/stream")
-//        val uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/sample/stream")
+        val uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/sample/stream")
       //testing this endpoint
-        val uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/stream")
+//        val uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/stream")
         val httpGet = new HttpGet(uriBuilder.build)
 //        val bearerToken = System.getenv("BEARER_TOKEN")
         val bearerToken = "YOUR BEARER TOKEN HERE"
