@@ -3,6 +3,7 @@ import org.apache.http.impl.client.HttpClients
 import org.apache.http.client.config.{CookieSpecs, RequestConfig}
 import org.apache.http.client.utils.URIBuilder
 import org.apache.http.client.methods.HttpGet
+
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.PrintWriter
@@ -11,6 +12,7 @@ import java.nio.file.Files
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.types.{IntegerType, StringType, StructType}
 
 
 object StreamDemo {
@@ -27,12 +29,16 @@ object StreamDemo {
          spark.sparkContext.setLogLevel("WARN")
 //         println(System.getProperty("user.dir"))
 //         Thread.sleep(20000)
-         val staticDF = spark.read.json("tweetstream.tmp")
+//         val staticDF = spark.read.json("tweetstream.tmp")
+//        val schema = new StructType()
+//          .add("id", IntegerType, true)
+//          .add("text", StringType, true)
+         val staticDF = spark.read.json("sampleResponse")
          val streamDF = spark.readStream.schema(staticDF.schema).json("twitterstream")
 
          val textQuery = streamDF.select($"data.text").writeStream.outputMode("append").format("console").start()
 
-         textQuery.awaitTermination(60000)
+         textQuery.awaitTermination(180000)
      }
 
     
@@ -40,11 +46,14 @@ object StreamDemo {
         val httpClient = HttpClients.custom.setDefaultRequestConfig(
             RequestConfig.custom.setCookieSpec(CookieSpecs.STANDARD).build
         ).build
+      //this endpoint will work
 //        val uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/sample/stream")
+//        val uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/sample/stream")
+      //testing this endpoint
         val uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/stream")
         val httpGet = new HttpGet(uriBuilder.build)
 //        val bearerToken = System.getenv("BEARER_TOKEN")
-        val bearerToken = "AAAAAAAAAAAAAAAAAAAAAKUnLwEAAAAApWuEw9K8SVH7%2BqNNxVtg36Ryr5o%3DP3sGYZngNVtApjFYqjMC5r3lTg8cF4gGIdCtcjUJAjnd23VpEk"
+        val bearerToken = "YOUR BEARER TOKEN HERE"
         httpGet.setHeader("Authorization", String.format("Bearer %s", bearerToken))
         val response = httpClient.execute(httpGet)
         val entity = response.getEntity()
