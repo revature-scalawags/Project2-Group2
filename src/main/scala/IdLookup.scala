@@ -21,7 +21,7 @@ object IdLookup {
 
   // @throws[IOException]
   // def main(args: Array[String]): Unit = {
-  //   var bearerToken: String = ""
+  //   var bearerToken: String = System.getenv("BEARER_TOKEN")
 
   //   if (bearerToken != null) {
   //         Future {
