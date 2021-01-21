@@ -1,4 +1,6 @@
 
+import SearchTweets.tweetAnalysis
+import SentimentAnalysis.sentimentAnalysis
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.client.config.{CookieSpecs, RequestConfig}
 import org.apache.http.client.utils.URIBuilder
@@ -12,6 +14,7 @@ import java.nio.file.Files
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.functions.explode
 import org.apache.spark.sql.types.{IntegerType, StringType, StructType}
 
 
@@ -36,9 +39,17 @@ object StreamDemo {
          val staticDF = spark.read.json("sampleResponse")
          val streamDF = spark.readStream.schema(staticDF.schema).json("twitterstream")
 
-         val textQuery = streamDF.select($"data.text").writeStream.outputMode("append").format("console").start()
+//         val textQuery = streamDF.select($"data.text").writeStream.outputMode("append").format("console").start()
+//          val tweetDF = streamDF.select($"data.text")
+//          var tweetDF = streamDF.select(explode($"data").as("tweetList")).select("tweetList.*")
+//            sentimentAnalysis(textQuery)
 
-         textQuery.awaitTermination(60000)
+          var tweetDF = streamDF.select(($"data.text").select("tweetList.*")
+//            val textQuery = streamDF.select($"data.text")
+//            tweetAnalysis(tweetDF, spark)
+           tweetDF.writeStream.outputMode("append").format("console").start().awaitTermination(60000)
+//           tweetDF.awaitTermination(60000)
+//           textQuery.awaitTermination(60000)
      }
 
     
