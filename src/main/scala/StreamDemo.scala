@@ -1,6 +1,4 @@
 
-import SearchTweets.tweetAnalysis
-import SentimentAnalysis.sentimentAnalysis
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.client.config.{CookieSpecs, RequestConfig}
 import org.apache.http.client.utils.URIBuilder
@@ -14,7 +12,6 @@ import java.nio.file.Files
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.functions.explode
 import org.apache.spark.sql.types.{IntegerType, StringType, StructType}
 
 
@@ -39,13 +36,11 @@ object StreamDemo {
          val staticDF = spark.read.json("sampleResponse")
          val streamDF = spark.readStream.schema(staticDF.schema).json("twitterstream")
 
-//         val textQuery = streamDF.select($"data.text").writeStream.outputMode("append").format("console").start()
-//          val tweetDF = streamDF.select($"data.text")
-//          var tweetDF = streamDF.select(explode($"data").as("tweetList")).select("tweetList.*")
-//            sentimentAnalysis(textQuery)
+         val textQuery = streamDF.select($"data.text").writeStream.outputMode("append").format("console").start()
 
-         textQuery.awaitTermination(180000)
+         textQuery.awaitTermination(60000)
      }
+
     
     def tweetStreamToDir() {
         val httpClient = HttpClients.custom.setDefaultRequestConfig(
@@ -53,9 +48,9 @@ object StreamDemo {
         ).build
       //this endpoint will work
 //        val uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/sample/stream")
-//        val uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/sample/stream")
+        val uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/sample/stream")
       //testing this endpoint
-        val uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/stream")
+//        val uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/search/stream")
         val httpGet = new HttpGet(uriBuilder.build)
 //        val bearerToken = System.getenv("BEARER_TOKEN")
         val bearerToken = "YOUR BEARER TOKEN HERE"
