@@ -43,11 +43,9 @@ object StreamDemo {
 //          val tweetDF = streamDF.select($"data.text")
 //          var tweetDF = streamDF.select(explode($"data").as("tweetList")).select("tweetList.*")
 //            sentimentAnalysis(textQuery)
-
      
          textQuery.awaitTermination(180000)
      }
-
     
     def tweetStreamToDir() {
         val httpClient = HttpClients.custom.setDefaultRequestConfig(
