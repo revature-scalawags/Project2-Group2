@@ -15,7 +15,7 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.types.{IntegerType, StringType, StructType}
 
 
-object StreamDemo {
+object StructuredStreaming {
    def main(args: Array[String]): Unit = {
          Future {
              tweetStreamToDir()
