@@ -11,10 +11,6 @@ import org.apache.http.message.BasicNameValuePair
 import org.apache.http.util.EntityUtils
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.DataFrame
-import org.apache.spark.sql.functions.udf
-import org.apache.spark.sql.functions._
-import org.apache.spark.sql.expressions._
-import org.apache.spark.sql.types._
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -25,8 +21,6 @@ import scala.concurrent.duration.Duration
 import scala.util.parsing.json._
 import scala.util.Try
 import org.apache.spark.sql.functions.explode
-import scala.collection.mutable.ListBuffer
-import org.apache.spark.sql.functions
 
 object SearchTweets {
 
@@ -56,8 +50,9 @@ object SearchTweets {
           tweetDF = retrievePages(next_token, bearerToken, tweetDF, spark)
         }
 
-        // This calls the final method to give the final result
-        tweetAnalysis(tweetDF, spark)
+        // At this point the tweetDF contains our desired tweets in the text column
+        tweetDF.show()
+        tweetDF.printSchema()
 
         spark.stop()
       }
@@ -128,24 +123,5 @@ object SearchTweets {
       tweetResponse = EntityUtils.toString(entity, "UTF-8")
     }
     return tweetResponse
-  }
-
-  def tweetAnalysis(tweetDF: DataFrame, spark: SparkSession){
-    import spark.implicits._
-
-    val textToArray = tweetDF.select($"text").collectAsList.toArray
-    var mappingTextAndAnalysis = ListBuffer[Map[String, String]]()
-    for(i <- textToArray){
-      val analysisResult = SentimentAnalysis.sentimentAnalysis(i.toString)
-      mappingTextAndAnalysis += Map(i.toString -> analysisResult)
-    }
-
-    val sentimentResultToList = mappingTextAndAnalysis.toDF()
-    val finalDF = sentimentResultToList.select((map_keys($"value"))(0) as "Text", (map_values($"value"))(0) as "Sentiment-Analysis")
-
-    val finalDF2 = finalDF.groupBy("Sentiment-Analysis").count()
-    val finalDF3 = finalDF2.groupBy("Sentiment-Analysis", "count" ).agg(sum("count") as "Sum" ) .withColumn("Percentage", $"count" / sum("Sum").over())
-    val finalDF4 = finalDF3.select($"Sentiment-Analysis", $"Sum", functions.round(($"Percentage" * 100), 2) as "Percentage(%)")
-    finalDF4.sort("Sentiment-Analysis").show(false)
   }
 }

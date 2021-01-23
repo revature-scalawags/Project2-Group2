@@ -121,5 +121,9 @@ spark-warehouse/
 # For SBT
 .jvmopts
 
+# Streaming Files
+twitterstream/
+tweetstream.tmp
+
 
 # End of https://www.toptal.com/developers/gitignore/api/scala,sbt,metals,spark
