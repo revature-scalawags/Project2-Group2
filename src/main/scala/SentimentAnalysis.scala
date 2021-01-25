@@ -6,10 +6,10 @@ import org.apache.spark.sql.types._
 import java.io.FileNotFoundException
 import scala.collection.mutable.ListBuffer
 import org.apache.spark.sql.DataFrame
-
+       
 object SentimentAnalysis{
 
-      def sentimentAnalysis(text: String): String = {
+    def sentimentAnalysis(text: String): String = {
         val spark = SparkSession.builder().appName("Sentiment Analysis").getOrCreate()
         import spark.implicits._
         //Read a text file and convert it into Dataframe
@@ -37,7 +37,7 @@ object SentimentAnalysis{
         val finalDF = lexiconToList.select((map_keys($"value"))(0) as "Word", (map_values($"value"))(0) as "Sentiment")
         val removeDuplicateDF = finalDF.dropDuplicates("Word")
         val textToWords = text.split(" ")
-        
+
         if(textToWords.size <= 1){
             val filterDF = removeDuplicateDF.filter($"Word" === (text))
             val result = filterDF.select($"Sentiment").collect().map(_.getString(0)).mkString(" ")

@@ -32,7 +32,7 @@ object SearchTweets {
 
   @throws[IOException]
   def main(args: Array[String]): Unit = {
-    val bearerToken: String = System.getenv("BEARER_TOKEN")
+    var bearerToken: String = System.getenv("BEARER_TOKEN")
 
       if (bearerToken != null) {
         // setup spark session
@@ -129,7 +129,7 @@ object SearchTweets {
     }
     return tweetResponse
   }
-
+  
   def tweetAnalysis(tweetDF: DataFrame, spark: SparkSession){
     import spark.implicits._
 
