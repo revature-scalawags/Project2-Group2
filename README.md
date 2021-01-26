@@ -11,4 +11,11 @@
 - Go over their tweets/retweets and categorize each tweet/retweet either as positive or as negatve, based on the nuanced words used (Use Apache Spark)
 - Answer the question: Which companies' Twitter accounts have more positive tweets/retweets than negative ones? and vice-versa? What is the insight gained from analyzing these businesses' Twitter content?
 
-- More to come :)
+## Example Results
+[Wendys](https://imgur.com/a/u1I9BLV)
+
+[Chick-Fil-A](https://imgur.com/a/XNwJGBH)
+
+## Google Slides powerpoint
+
+https://docs.google.com/presentation/d/1vG7IgBXfc0gUOD-RylH3TJpXcLts6diCY8UIR92Tm0M/edit?usp=sharing
