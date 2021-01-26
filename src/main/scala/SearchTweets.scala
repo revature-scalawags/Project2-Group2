@@ -148,4 +148,23 @@ object SearchTweets {
     val finalDF4 = finalDF3.select($"Sentiment-Analysis", $"Sum", functions.round(($"Percentage" * 100), 2) as "Percentage(%)")
     finalDF4.sort("Sentiment-Analysis").show(false)
   }
+
+  def tweetAnalysis2(tweetDF: DataFrame, spark: SparkSession): DataFrame = {
+    import spark.implicits._
+
+    val textToArray = tweetDF.select($"text").collectAsList.toArray
+    var mappingTextAndAnalysis = ListBuffer[Map[String, String]]()
+    for(i <- textToArray){
+      val analysisResult = SentimentAnalysis.sentimentAnalysis(i.toString)
+      mappingTextAndAnalysis += Map(i.toString -> analysisResult)
+    }
+
+    val sentimentResultToList = mappingTextAndAnalysis.toDF()
+    val finalDF = sentimentResultToList.select((map_keys($"value"))(0) as "Text", (map_values($"value"))(0) as "Sentiment-Analysis")
+
+    val finalDF2 = finalDF.groupBy("Sentiment-Analysis").count()
+    val finalDF3 = finalDF2.groupBy("Sentiment-Analysis", "count" ).agg(sum("count") as "Sum" ) .withColumn("Percentage", $"count" / sum("Sum").over())
+    val finalDF4 = finalDF3.select($"Sentiment-Analysis", $"Sum", functions.round(($"Percentage" * 100), 2) as "Percentage(%)")
+    return finalDF.sort("Sentiment-Analysis")
+  }
 }
