@@ -49,7 +49,7 @@ object StructuredStreaming {
       ).build
       val uriBuilder = new URIBuilder("https://api.twitter.com/2/tweets/sample/stream")
       val httpGet = new HttpGet(uriBuilder.build)
-      val bearerToken = "YOUR API KEY HERE"
+      val bearerToken = System.getenv("BEARER_TOKEN")
       httpGet.setHeader("Authorization", String.format("Bearer %s", bearerToken))
       val response = httpClient.execute(httpGet)
       val entity = response.getEntity()
