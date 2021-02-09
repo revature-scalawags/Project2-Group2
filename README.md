@@ -57,3 +57,13 @@ If you want to run sentiment analysis on filtered Twitter streaming data, please
 
 ## Contributors
 Sundoo, Chase, Trenton, Josh
+
+## Example Results
+[Wendys](https://imgur.com/a/u1I9BLV)
+
+[Chick-Fil-A](https://imgur.com/a/XNwJGBH)
+
+## Google Slides powerpoint
+
+https://docs.google.com/presentation/d/1vG7IgBXfc0gUOD-RylH3TJpXcLts6diCY8UIR92Tm0M/edit?usp=sharing
+
