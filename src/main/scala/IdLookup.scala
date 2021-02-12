@@ -27,7 +27,7 @@ object IdLookup {
   //         Future {
     
   //       //ID to look up goes here
-  //     var response: String = getTweets("BurgerKing", bearerToken)
+  //     var response: String = getTweets("McDonalds", bearerToken)
   //     println(response)
   //         }
   //   } else {

@@ -44,7 +44,7 @@ object SearchTweets {
         spark.sparkContext.setLogLevel("WARN")
 
         //create a dataframe out of our response json so we can start working with it
-        val responseDF = spark.read.json(Seq(getTweets("BurgerKing", bearerToken)).toDS)
+        val responseDF = spark.read.json(Seq(getTweets("AlaskaAir", bearerToken)).toDS)
 
         //deconstruct response DF to start building our tweetDF find next_token
         var tweetDF = responseDF.select(explode($"data").as("tweetList")).select("tweetList.*")
@@ -55,7 +55,7 @@ object SearchTweets {
           val next_token = metaDF.select("next_token").first().getString(0)
           tweetDF = retrievePages(next_token, bearerToken, tweetDF, spark)
         }
-
+        //println(tweetDF.select($"text").count())
         // This calls the final method to give the final result
         tweetAnalysis(tweetDF, spark)
 
@@ -69,7 +69,7 @@ object SearchTweets {
   //recursively retrieve all pages from API endpoint, printing them to console
   def retrievePages(next_token: String, bearer_token: String, buildingDF: DataFrame, spark: SparkSession): DataFrame = {
     import spark.implicits._
-    val responseDF = spark.read.json(Seq(getTweets("BurgerKing", bearer_token, next_token)).toDS())
+    val responseDF = spark.read.json(Seq(getTweets("AlaskaAir", bearer_token, next_token)).toDS())
     var tweetDF = responseDF.select(explode($"data").as("tweetList")).select("tweetList.*")
 
     // append our new DF to the old DF so we can pass it to the next reccursive call
